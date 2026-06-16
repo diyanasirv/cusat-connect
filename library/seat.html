@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUSAT Library Seat Booking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary-color: #006699;
+            --secondary-color: #e6f2ff;
+            --accent-color: #ff9933;
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --gray: #ddd;
+            --red: #ff6666;
+            --green: #66cc99;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-color);
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .booking-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .booking-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            flex: 1;
+            min-width: 120px;
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 0.5rem;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-box .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-box.available .value {
+            color: var(--green);
+        }
+
+        .stat-box.occupied .value {
+            color: var(--red);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, select {
+            padding: 0.75rem;
+            border: 1px solid var(--gray);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 102, 153, 0.2);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #004d73;
+        }
+
+        .seats-container {
+            margin-top: 1.5rem;
+        }
+
+        .seat-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .seat {
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background-color: var(--green);
+            color: white;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .seat.occupied {
+            background-color: var(--red);
+            cursor: not-allowed;
+        }
+
+        .seat.selected {
+            background-color: var(--accent-color);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+            gap: 1.5rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .legend-color.available {
+            background-color: var(--green);
+        }
+
+        .legend-color.occupied {
+            background-color: var(--red);
+        }
+
+        .legend-color.selected {
+            background-color: var(--accent-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .close {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .booking-success {
+            color: var(--green);
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .booking-info {
+            margin-top: 1rem;
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            border-radius: 6px;
+        }
+
+        .booking-info p {
+            margin: 0.5rem 0;
+        }
+
+        .bookings-list {
+            margin-top: 1.5rem;
+        }
+
+        .booking-item {
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .booking-item p {
+            margin: 0.25rem 0;
+        }
+
+        .cancel-btn {
+            background-color: var(--red);
+            padding: 0.5rem 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .cancel-btn:hover {
+            background-color: #cc5252;
+        }
+
+        .tab-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            background-color: var(--light-gray);
+            border: 1px solid var(--gray);
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            margin-right: 0.5rem;
+        }
+
+        .tab.active {
+            background-color: white;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        #notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 50;
+        }
+
+        .refresh-btn {
+            background-color: var(--accent-color);
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .refresh-btn:hover {
+            background-color: #e68a00;
+        }
+
+        .loader {
+            border: 3px solid var(--light-gray);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .booked-by {
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CUSAT Library Seat Booking</h1>
+    </header>
+
+    <div class="container">
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="booking">Seat Booking</div>
+                <div class="tab" data-tab="mybookings">My Bookings</div>
+            </div>
+
+            <div id="booking" class="tab-content active">
+                <div class="booking-grid">
+                    <div class="left-column">
+                        <div class="card">
+                            <h2>Seat Availability</h2>
+                            <div class="stats">
+                                <div class="stat-box available">
+                                    <h3>Available Seats</h3>
+                                    <div class="value" id="available-seats">--</div>
+                                </div>
+                                <div class="stat-box occupied">
+                                    <h3>Occupied Seats</h3>
+                                    <div class="value" id="occupied-seats">--</div>
+                                </div>
+                                <div class="stat-box">
+                                    <h3>Total Seats</h3>
+                                    <div class="value" id="total-seats">--</div>
+                                </div>
+                            </div>
+
+                            <h3>Select Seat</h3>
+                            <div class="seats-container" id="seats-container">
+                                <!-- Seats will be generated here -->
+                                <div class="loader" id="seats-loader"></div>
+                            </div>
+
+                            <div class="legend">
+                                <div class="legend-item">
+                                    <div class="legend-color available"></div>
+                                    <span>Available</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color occupied"></div>
+                                    <span>Occupied</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color selected"></div>
+                                    <span>Selected</span>
+                                </div>
+                            </div>
+
+                            <button class="refresh-btn" id="refresh-btn">Refresh Seat Availability</button>
+                        </div>
+                    </div>
+
+                    <div class="right-column">
+                        <div class="card">
+                            <h2>Book a Seat</h2>
+                            <form id="booking-form">
+                                <div class="form-group">
+                                    <label for="name">Full Name</label>
+                                    <input type="text" id="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="student-id">Student ID</label>
+                                    <input type="text" id="student-id" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="date">Date</label>
+                                    <input type="date" id="date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="start-time">Start Time</label>
+                                    <input type="time" id="start-time" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="end-time">End Time</label>
+                                    <input type="time" id="end-time" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Selected Seat: <span id="selected-seat-display">None</span></label>
+                                    <input type="hidden" id="seat-id" required>
+                                </div>
+                                <button type="submit" id="book-now-btn">Book Now</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mybookings" class="tab-content">
+                <div class="card">
+                    <h2>My Bookings</h2>
+                    <div class="form-group">
+                        <label for="lookup-email">Enter your email to view bookings</label>
+                        <div style="display: flex; gap: 1rem;">
+                            <input type="email" id="lookup-email" placeholder="Your email" style="flex: 1;">
+                            <button id="lookup-btn">Look Up</button>
+                        </div>
+                    </div>
+                    <div class="bookings-list" id="bookings-list">
+                        <!-- Bookings will be shown here -->
+                        <div class="loader" id="bookings-loader"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Booking Confirmed!</h2>
+            <p class="booking-success">Your seat has been successfully booked.</p>
+            <div class="booking-info" id="booking-info">
+                <!-- Booking details will go here -->
+            </div>
+            <button id="modal-close-btn" style="margin-top: 1rem; width: 100%;">Close</button>
+        </div>
+    </div>
+
+    <div id="notification"></div>
+
+    <!-- Firebase scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyD0q17OAWAXBL0v9ozh_XH1UupLyCdVlts",
+  authDomain: "seat-booking-93213.firebaseapp.com",
+  projectId: "seat-booking-93213",
+  storageBucket: "seat-booking-93213.firebasestorage.app",
+  messagingSenderId: "699196533002",
+  appId: "1:699196533002:web:1c1622a9c59e1b5c7ff2f3"
+};
+
+
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Library configuration
+        const TOTAL_SEATS = 50;
+        const ROWS = 5;
+        const SEATS_PER_ROW = 10;
+        
+        // DOM Elements
+        const availableSeatsEl = document.getElementById('available-seats');
+        const occupiedSeatsEl = document.getElementById('occupied-seats');
+        const totalSeatsEl = document.getElementById('total-seats');
+        const seatsContainerEl = document.getElementById('seats-container');
+        const selectedSeatDisplayEl = document.getElementById('selected-seat-display');
+        const seatIdInput = document.getElementById('seat-id');
+        const bookingForm = document.getElementById('booking-form');
+        const bookNowBtn = document.getElementById('book-now-btn');
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const bookingInfoEl = document.getElementById('booking-info');
+        const closeModalBtns = document.querySelectorAll('.close, #modal-close-btn');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const lookupEmailInput = document.getElementById('lookup-email');
+        const lookupBtn = document.getElementById('lookup-btn');
+        const bookingsListEl = document.getElementById('bookings-list');
+        const notificationEl = document.getElementById('notification');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const seatsLoader = document.getElementById('seats-loader');
+        const bookingsLoader = document.getElementById('bookings-loader');
+
+        // Variables
+        let selectedSeat = null;
+        let occupiedSeats = [];
+        let bookingsMap = {};  // Map of seat IDs to user names
+        let today = new Date();
+        let todayFormatted = today.toISOString().split('T')[0];
+        let isBookingInProgress = false;
+        
+        // Set minimum date on date input to today
+        document.getElementById('date').min = todayFormatted;
+        document.getElementById('date').value = todayFormatted;
+        
+        // Initialize the app
+        function init() {
+            renderSeats();
+            fetchOccupiedSeats();
+            updateStats();
+            
+            // Set up event listeners
+            bookingForm.addEventListener('submit', handleBookingSubmit);
+            refreshBtn.addEventListener('click', fetchOccupiedSeats);
+            
+            closeModalBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    confirmationModal.style.display = 'none';
+                });
+            });
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Update tab states
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            lookupBtn.addEventListener('click', lookupBookings);
+
+            // Set up auto-refresh (every 30 seconds)
+            setInterval(fetchOccupiedSeats, 30000);
+        }
+        
+        // Render seat grid
+        function renderSeats() {
+            totalSeatsEl.textContent = TOTAL_SEATS;
+            
+            // Clear seats container
+            seatsContainerEl.innerHTML = '';
+            
+            // Create rows and seats
+            for (let row = 0; row < ROWS; row++) {
+                const seatRow = document.createElement('div');
+                seatRow.className = 'seat-row';
+                
+                for (let col = 0; col < SEATS_PER_ROW; col++) {
+                    const seatNumber = row * SEATS_PER_ROW + col + 1;
+                    const seat = document.createElement('div');
+                    seat.className = 'seat';
+                    seat.textContent = seatNumber;
+                    seat.setAttribute('data-seat-id', seatNumber);
+                    
+                    seat.addEventListener('click', () => {
+                        if (seat.classList.contains('occupied')) {
+                            const bookedBy = bookingsMap[seatNumber] || 'someone';
+                            showNotification(`This seat is already booked by ${bookedBy}.`);
+                            return;
+                        }
+                        
+                        // Clear previous selection
+                        if (selectedSeat) {
+                            document.querySelector(`.seat[data-seat-id="${selectedSeat}"]`).classList.remove('selected');
+                        }
+                        
+                        // Set new selection
+                        selectedSeat = seatNumber;
+                        seat.classList.add('selected');
+                        selectedSeatDisplayEl.textContent = `Seat ${seatNumber}`;
+                        seatIdInput.value = seatNumber;
+                    });
+                    
+                    seatRow.appendChild(seat);
+                }
+                
+                seatsContainerEl.appendChild(seatRow);
+            }
+        }
+        
+        // Fetch occupied seats from Firestore
+        function fetchOccupiedSeats() {
+            const dateInput = document.getElementById('date');
+            const date = dateInput.value || todayFormatted;
+            
+            // Show loader
+            seatsLoader.style.display = 'block';
+            
+            // Reset bookings map
+            bookingsMap = {};
+            
+            db.collection('bookings')
+              .where('date', '==', date)
+              .get()
+              .then((querySnapshot) => {
+                  occupiedSeats = [];
+                  
+                  querySnapshot.forEach((doc) => {
+                      const bookingData = doc.data();
+                      occupiedSeats.push(bookingData.seatId);
+                      
+                      // Store user name for tooltip
+                      bookingsMap[bookingData.seatId] = bookingData.name.split(' ')[0]; // First name only
+                  });
+                  
+                  updateSeatsStatus();
+                  updateStats();
+                  seatsLoader.style.display = 'none';
+              })
+              .catch((error) => {
+                  console.error("Error fetching occupied seats: ", error);
+                  showNotification('Error fetching seats. Please try again later.');
+                  seatsLoader.style.display = 'none';
+              });
+        }
+        
+        // Update seats status based on occupied seats
+        function updateSeatsStatus() {
+            // Reset all seats to available
+            document.querySelectorAll('.seat').forEach(seat => {
+                seat.classList.remove('occupied');
+                
+                // Remove any existing booked-by info
+                const seatId = parseInt(seat.getAttribute('data-seat-id'));
+                const existingInfo = seat.querySelector('.booked-by');
+                if (existingInfo) {
+                    seat.removeChild(existingInfo);
+                }
+            });
+            
+            // Mark occupied seats
+            occupiedSeats.forEach(seatId => {
+                const seatEl = document.querySelector(`.seat[data-seat-id="${seatId}"]`);
+                if (seatEl) {
+                    seatEl.classList.add('occupied');
+                    
+                    // Add booked-by info if available
+                    if (bookingsMap[seatId]) {
+                        const bookedByEl = document.createElement('div');
+                        bookedByEl.className = 'booked-by';
+                        bookedByEl.textContent = bookingsMap[seatId];
+                        seatEl.appendChild(bookedByEl);
+                    }
+                    
+                    // If this was the selected seat, unselect it
+                    if (selectedSeat === seatId) {
+                        selectedSeat = null;
+                        selectedSeatDisplayEl.textContent = 'None';
+                        seatIdInput.value = '';
+                    }
+                }
+            });
+        }
+        
+        // Update seat statistics
+        function updateStats() {
+            const occupied = occupiedSeats.length;
+            const available = TOTAL_SEATS - occupied;
+            
+            availableSeatsEl.textContent = available;
+            occupiedSeatsEl.textContent = occupied;
+        }
+        
+        // Handle booking form submission
+        function handleBookingSubmit(e) {
+            e.preventDefault();
+            
+            // Prevent double submission
+            if (isBookingInProgress) {
+                return;
+            }
+            
+            if (!selectedSeat) {
+                showNotification('Please select a seat first.');
+                return;
+            }
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const studentId = document.getElementById('student-id').value;
+            const date = document.getElementById('date').value;
+            const startTime = document.getElementById('start-time').value;
+            const endTime = document.getElementById('end-time').value;
+            
+            // Basic validation
+            if (!name || !email || !studentId || !date || !startTime || !endTime) {
+                showNotification('Please fill in all fields.');
+                return;
+            }
+            
+            if (startTime >= endTime) {
+                showNotification('End time must be after start time.');
+                return;
+            }
+            
+            // Disable form while processing
+            setFormDisabled(true);
+            isBookingInProgress = true;
+            
+            // Check one more time if seat is available
+            db.collection('bookings')
+              .where('date', '==', date)
+              .where('seatId', '==', selectedSeat)
+              .get()
+              .then((querySnapshot) => {
+                  if (!querySnapshot.empty) {
+                      showNotification('This seat was just booked by someone else. Please select another seat.');
+                      fetchOccupiedSeats();
+                      setFormDisabled(false);
+                      isBookingInProgress = false;
+                      return;
+                  }
+                  
+                  // Create booking data
+                  const bookingData = {
+                      name,
+                      email,
+                      studentId,
+                      date,
+                      startTime,
+                      endTime,
+                      seatId: selectedSeat,
+                      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                      bookingId: generateBookingId()
+                  };
+                  
+                  // Save to Firestore
+                  db.collection('bookings')
+                    .add(bookingData)
+                    .then((docRef) => {
+                        // Show confirmation
+                        showBookingConfirmation(bookingData);
+                        
+                        // Reset form
+                        bookingForm.reset();
+                        selectedSeat = null;
+                        selectedSeatDisplayEl.textContent = 'None';
+                        seatIdInput.value = '';
+                        document.getElementById('date').value = todayFormatted;
+                        
+                        // Update seats
+                        fetchOccupiedSeats();
+                        
+                        // Re-enable form
+                        setFormDisabled(false);
+                        isBookingInProgress = false;
+                    })
+                    .catch((error) => {
+                        console.error("Error adding booking: ", error);
+                        showNotification('Error saving your booking. Please try again.');
+                        setFormDisabled(false);
+                        isBookingInProgress = false;
+                    });
+              })
+              .catch((error) => {
+                  console.error("Error checking seat availability: ", error);
+                  showNotification('Error checking seat availability. Please try again.');
+                  setFormDisabled(false);
+                  isBookingInProgress = false;
+              });
+        }
+        
+        // Enable/disable form elements
+        function setFormDisabled(disabled) {
+            const formElements = bookingForm.querySelectorAll('input, button, select');
+            formElements.forEach(el => {
+                el.disabled = disabled;
+            });
+            
+            if (disabled) {
+                bookNowBtn.textContent = 'Processing...';
+            } else {
+                bookNowBtn.textContent = 'Book Now';
+            }
+        }
+        
+        // Show booking confirmation
+        function showBookingConfirmation(booking) {
+            // Format date and time
+            const dateObj = new Date(booking.date);
+            const formattedDate = dateObj.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Create confirmation content
+            const confirmationHTML = `
+                <p><strong>Name:</strong> ${booking.name}</p>
+                <p><strong>Student ID:</strong> ${booking.studentId}</p>
+                <p><strong>Date:</strong> ${formattedDate}</p>
+                <p><strong>Time:</strong> ${booking.startTime} - ${booking.endTime}</p>
+                <p><strong>Seat:</strong> ${booking.seatId}</p>
+                <p><strong>Booking ID:</strong> ${booking.bookingId}</p>
+            `;
+            
+            bookingInfoEl.innerHTML = confirmationHTML;
+            confirmationModal.style.display = 'flex';
+        }
+        
+        // Look up bookings by email
+        function lookupBookings() {
+            const email = lookupEmailInput.value.trim();
+            
+            if (!email) {
+                showNotification('Please enter your email address.');
+                return;
+            }
+            
+            // Show loader
+            bookingsListEl.innerHTML = '';
+            bookingsLoader.style.display = 'block';
+            
+            db.collection('bookings')
+              .where('email', '==', email)
+              .orderBy('date')
+              .get()
+              .then((querySnapshot) => {
+                  bookingsLoader.style.display = 'none';
+                  
+                  if (querySnapshot.empty) {
+                      bookingsListEl.innerHTML = '<p>No bookings found for this email.</p>';
+                      return;
+                  }
+                  
+                  let bookingsHTML = '';
+                  
+                  querySnapshot.forEach((doc) => {
+                      const booking = doc.data();
+                      const dateObj = new Date(booking.date);
+                      const formattedDate = dateObj.toLocaleDateString('en-US', { 
+                          weekday: 'long', 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                      });
+                      
+                      bookingsHTML += `
+                          <div class="booking-item">
+                              <p><strong>Date:</strong> ${formattedDate}</p>
+                              <p><strong>Time:</strong> ${booking.startTime} - ${booking.endTime}</p>
+                              <p><strong>Seat:</strong> ${booking.seatId}</p>
+                              <p><strong>Booking ID:</strong> ${booking.bookingId}</p>
+                              <button class="cancel-btn" data-booking-id="${doc.id}">Cancel Booking</button>
+                          </div>
+                      `;
+                  });
+                  
+                  bookingsListEl.innerHTML = bookingsHTML;
+                  
+                  // Add event listeners to cancel buttons
+                  document.querySelectorAll('.cancel-btn').forEach(btn => {
+                      btn.addEventListener('click', handleCancelBooking);
+                  });
+              })
+              .catch((error) => {
+                  console.error("Error looking up bookings: ", error);
+                  bookingsLoader.style.display = 'none';
+                  bookingsListEl.innerHTML = '<p>Error looking up bookings. Please try again later.</p>';
+              });
+        }
+        
+        // Handle booking cancellation
+        function handleCancelBooking(e) {
+            const bookingId = e.target.getAttribute('data-booking-id');
+            
+            if (confirm('Are you sure you want to cancel this booking?')) {
+                db.collection('bookings')
+                  .doc(bookingId)
+                  .delete()
+                  .then(() => {
+                      showNotification('Booking cancelled successfully!');
+                      lookupBookings(); // Refresh bookings list
+                      fetchOccupiedSeats(); // Update seats
+                  })
+                  .catch((error) => {
+                      console.error("Error cancelling booking: ", error);
+                      showNotification('Error cancelling booking. Please try again.');
+                  });
+            }
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            notificationEl.textContent = message;
+            notificationEl.style.display = 'block';
+            
+            setTimeout(() => {
+                notificationEl.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Generate random booking ID
+        function generateBookingId() {
+            return 'BK-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+        
+        // Listen for date changes to update seat status
+        document.getElementById('date').addEventListener('change', fetchOccupiedSeats);
+        
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
