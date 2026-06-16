@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventSync - Your Career Companion</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- User Card (Visible on Desktop) -->
+        <div class="user-card">
+            <h2 id="user-name"></h2>
+            <div class="details" id="user-details"></div>
+            <div class="section">
+                <h3>Skills</h3>
+                <div class="keywords" id="skillsList"></div>
+            </div>
+            <div class="section">
+                <h3>Interests</h3>
+                <div class="keywords" id="interestsList"></div>
+            </div>
+            <div class="section">
+                <h3>Aspire to Be</h3>
+                <div class="keywords" id="aspireList"></div>
+            </div>
+        </div>
+
+        <!-- Profile Modal (Visible on Mobile) -->
+        <div class="modal" id="profileModal">
+            <div class="modal-content">
+                <h2 id="profileModal-name"></h2>
+                <div class="details" id="profileModal-details"></div>
+                <div class="section">
+                    <h3>Skills</h3>
+                    <div class="keywords" id="profileSkillsList"></div>
+                </div>
+                <div class="section">
+                    <h3>Interests</h3>
+                    <div class="keywords" id="profileInterestsList"></div>
+                </div>
+                <div class="section">
+                    <h3>Aspire to Be</h3>
+                    <div class="keywords" id="profileAspireList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Tabs -->
+            <div class="tabs" id="tabs">
+                <div class="active" onclick="switchTab('events')" tabindex="0" aria-label="Events Tab">Events</div>
+                <div onclick="switchTab('internships')" tabindex="0" aria-label="Internships Tab">Internships</div>
+                <div onclick="switchTab('projects')" tabindex="0" aria-label="Projects Tab">Projects</div>
+                <div class="highlight"></div>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="eventsTab" class="tab-content active">
+                <!-- Search and Filter -->
+                <div class="search-filter" id="searchFilter">
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Search events..." onkeyup="debouncedFilterEvents()" aria-label="Search Events">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    <div class="filter">
+                        <ul id="categoryFilter">
+                            <li data-category="all" class="active" tabindex="0" aria-label="All Categories">All</li>
+                            <li data-category="data science" tabindex="0" aria-label="Data Science Category">Data Science</li>
+                            <li data-category="web development" tabindex="0" aria-label="Web Development Category">Web Development</li>
+                            <li data-category="hackathons" tabindex="0" aria-label="Hackathons Category">Hackathons</li>
+                            <li data-category="workshops" tabindex="0" aria-label="Workshops Category">Workshops</li>
+                        </ul>
+                        <div class="buttons">
+                            <button class="profile-button" onclick="openProfileModal()" aria-label="View Profile">Profile</button>
+                            <button class="ai-button" id="aiButton" onclick="toggleAIPersonalization()" aria-label="Toggle AI Personalization">AI Personalize</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Grid -->
+                <div class="event-grid" id="eventGrid"></div>
+            </div>
+            <div id="internshipsTab" class="tab-content">
+                <p>Coming soon...</p>
+            </div>
+            <div id="projectsTab" class="tab-content">
+                <p>Coming soon...</p>
+            </div>
+        </div>
+    </div>
+    <footer>© 2025 EventSync - Powered by xAI</footer>
+
+    <script src="script.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCY7QcrbnkQmMWfbmion01PAsu5_s5GUrM",
+            authDomain: "cusat-connect-50e90.firebaseapp.com",
+            projectId: "cusat-connect-50e90",
+            storageBucket: "cusat-connect-50e90.firebasestorage.app",
+            messagingSenderId: "255437667135",
+            appId: "1:255437667135:web:5c0c6216744679c101718a"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        firebase.auth().onAuthStateChanged(user => {
+            if (!user || !localStorage.getItem('uid')) {
+                window.location.href = '../index.html';
+            } else {
+                loadUserProfile(localStorage.getItem('uid'));
+                fetchEventsFromAirtable(); // Load events immediately
+            }
+        });
+    </script>
+</body>
+</html>

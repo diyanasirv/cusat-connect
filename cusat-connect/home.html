@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cusat-Connect - Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <style>
+        :root {
+            --primary-color: #007aff;
+            --secondary-color: #f2f2f7;
+            --text-color: #1d1d1f;
+            --background-color: #ffffff;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --card-hover: 0 12px 32px rgba(0, 0, 0, 0.12);
+            --border-radius: 14px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+        
+        .title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background-color: var(--background-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #007aff, #5856d6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        
+        .profile-icon i {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .profile-icon i:hover {
+            transform: scale(1.1);
+        }
+        
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.5px;
+            text-align: center;
+            margin-top: 2rem;
+            background: linear-gradient(135deg, #007aff, #5856d6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #6e6e73;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.6;
+        }
+        
+        .app-drawer {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .drawer-item {
+            background-color: var(--background-color);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 180px;
+            text-align: center;
+        }
+        
+        .drawer-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-hover);
+        }
+        
+        .drawer-item i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .drawer-item-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .drawer-item-description {
+            font-size: 0.9rem;
+            color: #6e6e73;
+            line-height: 1.4;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6e6e73;
+            font-size: 0.9rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        @media (max-width: 768px) {
+            .title-bar {
+                padding: 1rem 1.5rem;
+            }
+            
+            .dashboard {
+                padding: 1.5rem;
+            }
+            
+            .dashboard h1 {
+                font-size: 2rem;
+            }
+            
+            .drawer-item {
+                padding: 1.5rem;
+                height: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="title-bar">
+        <div class="logo">Cusat-Connect</div>
+        <div class="profile-icon">
+            <i class="fas fa-user-circle" onclick="window.location.href='profile.html'"></i>
+        </div>
+    </div>
+    
+    <div class="dashboard">
+        <h1>Welcome to Cusat-Connect</h1>
+        <p class="welcome-message">
+            Your all-in-one platform for campus connectivity. Access events, marketplace listings, and library resources with a seamless  interface.
+        </p>
+        
+        <div class="app-drawer">
+            <button class="drawer-item" onclick="window.location.href='events/events.html'">
+                <i class="fas fa-calendar-alt"></i>
+                <div class="drawer-item-title">Events</div>
+                <div class="drawer-item-description">Discover and join campus events, seminars, and activities</div>
+            </button>
+            
+            <button class="drawer-item" onclick="window.location.href='marketplace/marketplace.html'">
+                <i class="fas fa-store"></i>
+                <div class="drawer-item-title">Marketplace</div>
+                <div class="drawer-item-description">Buy, sell, and exchange items within the campus community</div>
+            </button>
+            
+            <button class="drawer-item" onclick="window.location.href='library/library.html'">
+                <i class="fas fa-book"></i>
+                <div class="drawer-item-title">Library</div>
+                <div class="drawer-item-description">Access study materials, notes, and academic resources</div>
+            </button>
+        </div>
+    </div>
+    
+    <div class="footer">
+        © 2025 Cusat-Connect. All rights reserved.
+    </div>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCY7QcrbnkQmMWfbmion01PAsu5_s5GUrM",
+            authDomain: "cusat-connect-50e90.firebaseapp.com",
+            projectId: "cusat-connect-50e90",
+            storageBucket: "cusat-connect-50e90.firebasestorage.app",
+            messagingSenderId: "255437667135",
+            appId: "1:255437667135:web:5c0c6216744679c101718a"
+        };
+        firebase.initializeApp(firebaseConfig);
+        firebase.auth().onAuthStateChanged(user => {
+            if (!user || !localStorage.getItem('uid')) window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

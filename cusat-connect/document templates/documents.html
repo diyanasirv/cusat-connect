@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Document Templates</title>
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --secondary: #8338ec;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #38b000;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-welcome {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-box {
+            margin: 1.5rem 0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .template-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-header h3 {
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+        
+        .card-body {
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-image {
+            height: 200px;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .preview-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .template-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2b75e6;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(58, 134, 255, 0.1);
+        }
+        
+        .zoom-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .zoomed-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+        
+        .zoomed-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+        
+        .close-zoom {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .template-info {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .template-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .user-welcome {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="user-welcome">
+                <div>
+                    <h1>Document Templates</h1>
+                    <p>Browse and preview all available document templates</p>
+                </div>
+                <div class="user-profile">
+                    <div class="profile-image">JS</div>
+                    <span>John Smith</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search templates...">
+        </div>
+        
+        <div class="category-filter">
+            <button class="category-btn active" data-category="all">All Templates</button>
+            <button class="category-btn" data-category="leave">Leave Applications</button>
+            <button class="category-btn" data-category="bonafide">Bonafide Certificates</button>
+            <button class="category-btn" data-category="tc">Transfer Certificates</button>
+            <button class="category-btn" data-category="attendance">Attendance Records</button>
+            <button class="category-btn" data-category="other">Other</button>
+        </div>
+        
+        <div class="template-grid" id="templateGrid">
+            <!-- Template cards will be dynamically inserted here -->
+        </div>
+    </div>
+    
+    <div class="zoom-overlay" id="zoomOverlay">
+        <div class="zoomed-content">
+            <button class="close-zoom" id="closeZoom">×</button>
+            <img id="zoomedImage" src="" alt="Zoomed template">
+        </div>
+    </div>
+    
+    <script>
+        const templates = [
+            {
+                id: 1,
+                title: "Leave Application",
+                category: "leave",
+                description: "Standard format for requesting leave from college",
+                image: "/api/placeholder/400/320",
+                pdfUrl: "#"
+            },
+            {
+                id: 2,
+                title: "Medical Leave Application",
+                category: "leave",
+                description: "Format for requesting leave due to medical reasons with doctor certificate attachment",
+                image: "/api/placeholder/400/320",
+                pdfUrl: "#"
+            },
+            {
+                id: 3,
+                title: "Bonafide Certificate Request",
+                category: "bonafide",
+                description: "Request format for obtaining bonafide certificate from college",
+                image: "/api/placeholder/400/320",
+                pdfUrl: "#"
+            },
+            {
+                id: 4,
+                title: "Transfer Certificate",
+                category: "tc",
+                description: "Standard format for college transfer certificate",
+                image: "/api/placeholder/400/320",
+                pdfUrl: "#"
+            },
+            {
+                id: 5,
+                title: "Monthly Attendance Record",
+                category: "attendance",
+                description: "Format for monthly attendance submission",
+                image: "/api/placeholder/400/320",
+                pdfUrl: "#"
+            },
+            {
+                id: 6,
+                title: "Scholarship Application",
+                category: "other",
+                description: "Standard format for applying to college scholarships",
+                image: "/api/placeholder/400/320",
+                pdfUrl: "#"
+            },
+            {
+                id: 7,
+                title: "Event Participation Certificate",
+                category: "other",
+                description: "Template for event participation certification",
+                image: "/api/placeholder/400/320",
+                pdfUrl: "#"
+            },
+            {
+                id: 8,
+                title: "Semester Leave Application",
+                category: "leave",
+                description: "Format for requesting leave for an entire semester",
+                image: "/api/placeholder/400/320",
+                pdfUrl: "#"
+            },
+            {
+                id: 9,
+                title: "Annual Attendance Summary",
+                category: "attendance",
+                description: "Format for annual attendance records and summary",
+                image: "/api/placeholder/400/320",
+                pdfUrl: "#"
+            }
+        ];
+        
+        // Render template cards
+        function renderTemplates(templatesArray) {
+            const templateGrid = document.getElementById('templateGrid');
+            templateGrid.innerHTML = '';
+            
+            if (templatesArray.length === 0) {
+                templateGrid.innerHTML = '<p>No templates found matching your search.</p>';
+                return;
+            }
+            
+            templatesArray.forEach(template => {
+                const card = document.createElement('div');
+                card.className = 'template-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h3>${template.title}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="preview-image" data-id="${template.id}">
+                            <img src="${template.image}" alt="${template.title}">
+                        </div>
+                        <div class="template-info">${template.description}</div>
+                        <div class="template-actions">
+                            <button class="btn btn-outline view-btn" data-id="${template.id}">Preview</button>
+                            <a href="${template.pdfUrl}" class="btn btn-primary" download>Download</a>
+                        </div>
+                    </div>
+                `;
+                templateGrid.appendChild(card);
+            });
+            
+            // Add event listeners to preview buttons and images
+            document.querySelectorAll('.view-btn, .preview-image').forEach(elem => {
+                elem.addEventListener('click', function() {
+                    const templateId = this.getAttribute('data-id');
+                    const template = templates.find(t => t.id === parseInt(templateId));
+                    if (template) {
+                        document.getElementById('zoomedImage').src = template.image;
+                        document.getElementById('zoomOverlay').style.display = 'flex';
+                    }
+                });
+            });
+        }
+        
+        // Initial render
+        renderTemplates(templates);
+        
+        // Filter by category
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                const category = this.getAttribute('data-category');
+                const searchText = document.getElementById('searchInput').value.toLowerCase();
+                
+                filterTemplates(category, searchText);
+            });
+        });
+        
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchText = this.value.toLowerCase();
+            const activeCategory = document.querySelector('.category-btn.active').getAttribute('data-category');
+            
+            filterTemplates(activeCategory, searchText);
+        });
+        
+        // Combined filter function
+        function filterTemplates(category, searchText) {
+            let filteredTemplates = templates;
+            
+            // Filter by category
+            if (category !== 'all') {
+                filteredTemplates = filteredTemplates.filter(template => template.category === category);
+            }
+            
+            // Filter by search text
+            if (searchText) {
+                filteredTemplates = filteredTemplates.filter(template => 
+                    template.title.toLowerCase().includes(searchText) || 
+                    template.description.toLowerCase().includes(searchText)
+                );
+            }
+            
+            renderTemplates(filteredTemplates);
+        }
+        
+        // Close zoom overlay
+        document.getElementById('closeZoom').addEventListener('click', function() {
+            document.getElementById('zoomOverlay').style.display = 'none';
+        });
+        
+        // Also close on clicking outside the zoomed content
+        document.getElementById('zoomOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

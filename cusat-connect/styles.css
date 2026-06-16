@@ -1,0 +1,505 @@
+/* General Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: #f0f2f5;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Authentication Styles */
+.auth-container {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+    font-size: 2em;
+    color: #3f51b5;
+    margin-bottom: 20px;
+}
+
+.google-signin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    width: 100%;
+}
+
+.google-signin:hover {
+    background: #3267d6;
+    transform: translateY(-2px);
+}
+
+.google-signin i {
+    margin-right: 10px;
+}
+
+.signup-form {
+    margin-top: 20px;
+}
+
+.signup-form h2 {
+    font-size: 1.5em;
+    color: #3f51b5;
+    margin-bottom: 20px;
+}
+
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+    animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.form-step label {
+    display: block;
+    font-weight: 500;
+    color: #3f51b5;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.form-step input,
+.form-step select,
+.form-step textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-step textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-step input:focus,
+.form-step select:focus,
+.form-step textarea:focus {
+    border-color: #3f51b5;
+    box-shadow: 0 0 5px rgba(63, 81, 181, 0.3);
+    outline: none;
+}
+
+.form-step button {
+    padding: 12px 24px;
+    background: #3f51b5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    font-size: 1em;
+    font-weight: 500;
+    width: 100%;
+}
+
+.form-step button:hover {
+    background: #303f9f;
+    transform: translateY(-2px);
+}
+
+.form-step button:disabled {
+    background: #b0bec5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Home Page (Dashboard) Styles */
+.title-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #3f51b5;
+    color: white;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 1.5em;
+    font-weight: 500;
+}
+
+.logo a {
+    color: white;
+    text-decoration: none;
+}
+
+.profile-icon i {
+    font-size: 2em;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.profile-icon i:hover {
+    color: #e8eaf6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 80px auto 20px;
+    padding: 20px;
+}
+
+.dashboard {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.dashboard h1 {
+    font-size: 2em;
+    margin-bottom: 30px;
+    color: #3f51b5;
+}
+
+.app-drawer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.drawer-item {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #333;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.drawer-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.drawer-item i {
+    display: block;
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #3f51b5;
+}
+
+/* Profile Page Styles */
+.profile-details {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.profile-details h1 {
+    font-size: 1.8em;
+    color: #3f51b5;
+    margin-bottom: 15px;
+}
+
+.profile-details p {
+    margin: 10px 0;
+    font-size: 1em;
+    color: #666;
+}
+
+.profile-details .section {
+    margin: 15px 0;
+}
+
+.profile-details .section h3 {
+    font-size: 1.2em;
+    color: #3f51b5;
+    margin-bottom: 8px;
+}
+
+.keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.keywords span {
+    background: #e8eaf6;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    color: #3f51b5;
+}
+
+.edit-button {
+    padding: 10px 20px;
+    background: #3f51b5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 15px;
+    font-size: 1em;
+}
+
+.edit-button:hover {
+    background: #303f9f;
+    transform: translateY(-2px);
+}
+
+/* Marketplace Section */
+.marketplace-section {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.new-listing-section h2,
+.purchased-items-section h2 {
+    font-size: 1.5em;
+    color: #3f51b5;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.product-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.product-card h3 {
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.product-card p {
+    font-size: 0.9em;
+    color: #666;
+    margin: 5px 0;
+}
+
+.purchased-items-section {
+    margin-top: 30px;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in-out;
+    position: relative;
+}
+
+.modal-content h2 {
+    font-size: 1.5em;
+    color: #3f51b5;
+    margin-bottom: 20px;
+}
+
+.modal-content .section {
+    margin: 15px 0;
+}
+
+.modal-content h3 {
+    font-size: 1.2em;
+    color: #3f51b5;
+    margin-bottom: 10px;
+}
+
+.modal-content select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    margin-bottom: 15px;
+}
+
+.modal-content .keywords span {
+    display: inline-flex;
+    align-items: center;
+    background: #e8eaf6;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    color: #3f51b5;
+    margin: 4px;
+}
+
+.modal-content .keywords i {
+    margin-left: 8px;
+    cursor: pointer;
+    color: #f44336;
+    transition: color 0.3s;
+}
+
+.modal-content .keywords i:hover {
+    color: #d32f2f;
+}
+
+.modal-content button {
+    padding: 12px 24px;
+    background: #3f51b5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 15px;
+    font-size: 1em;
+}
+
+.modal-content button:hover {
+    background: #303f9f;
+    transform: translateY(-2px);
+}
+
+/* Signout Button */
+.signout-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    font-size: 1em;
+}
+
+.signout-btn:hover {
+    background: #d32f2f;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    .profile-details,
+    .marketplace-section {
+        max-width: 100%;
+    }
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+    .app-drawer {
+        grid-template-columns: 1fr;
+    }
+    .modal-content {
+        width: 95%;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5em;
+    }
+    .title-bar {
+        padding: 8px 15px;
+    }
+    .logo {
+        font-size: 1.2em;
+    }
+    .profile-icon i {
+        font-size: 1.5em;
+    }
+    .form-step input,
+    .form-step select,
+    .form-step textarea,
+    .form-step button {
+        font-size: 0.9em;
+    }
+}

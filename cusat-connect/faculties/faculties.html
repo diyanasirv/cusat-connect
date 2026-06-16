@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUSAT Faculty Directory</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #1a237e;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            color: #444;
+            margin-bottom: 25px;
+        }
+
+        .department-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .department-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .department-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-content h3 {
+            color: #1a237e;
+            margin-bottom: 10px;
+        }
+
+        .card-content p {
+            color: #666;
+        }
+
+        .department-detail {
+            display: none;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            background-color: #1a237e;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background-color: #0d1642;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .tab-button:hover {
+            color: #1a237e;
+        }
+
+        .active-tab {
+            color: #1a237e !important;
+            border-bottom: 3px solid #1a237e;
+            margin-bottom: -2px;
+        }
+
+        .tab-content {
+            overflow-x: auto;
+        }
+
+        .search-container {
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .specialization-cell {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .expanded {
+            background-color: #f0f4ff;
+        }
+
+        .expanded-row {
+            display: none;
+        }
+
+        .expanded-row.show {
+            display: table-row;
+        }
+
+        .expanded-content {
+            padding: 15px;
+            background-color: #f0f4ff;
+        }
+
+        .expanded-content p {
+            margin-bottom: 8px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .tabs button {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="department-selector">
+            <header>
+                <h1>CUSAT Faculty Directory</h1>
+                <h2>Select a Department</h2>
+            </header>
+            <div class="department-cards" id="department-list">
+            </div>
+        </div>
+
+        <div id="department-detail" class="department-detail">
+            <div class="header-container">
+                <h1 id="department-name"></h1>
+                <button class="back-button" id="back-button">Back to Departments</button>
+            </div>
+            
+            <div class="tabs">
+                <button id="faculty-tab" class="tab-button active-tab">Faculty Members</button>
+                <button id="staff-tab" class="tab-button">Staff Members</button>
+            </div>
+            
+            <div class="tab-content" id="faculty-content">
+                <div class="search-container">
+                    <input type="text" id="faculty-search" placeholder="Search faculty..." class="search-input">
+                </div>
+                <table id="faculty-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Qualification</th>
+                            <th>Designation</th>
+                            <th>Specialization</th>
+                            <th>Joining Date</th>
+                            <th>Association</th>
+                        </tr>
+                    </thead>
+                    <tbody id="faculty-table-body">
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="tab-content" id="staff-content" style="display:none;">
+                <div class="search-container">
+                    <input type="text" id="staff-search" placeholder="Search staff..." class="search-input">
+                </div>
+                <table id="staff-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Designation</th>
+                            <th>Email</th>
+                            <th>Contact</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staff-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const departmentData = {
+            "Safety": {
+                faculty: [
+                    {
+                        id: 1,
+                        name: "SYAM JOY",
+                        qualification: "",
+                        specialization: "",
+                        designation: "",
+                        joiningDate: "",
+                        professorDesignationDate: "",
+                        currentlyAssociated: "NO",
+                        association: "contract"
+                    },
+                    {
+                        id: 2,
+                        name: "Dr. George Mathew",
+                        qualification: "Ph.D",
+                        specialization: "Structural fire safety, building materials exposed to elevated temperatures, corrosion of structures, geopolymer concrete",
+                        designation: "Professor",
+                        joiningDate: "25/1/99",
+                        professorDesignationDate: "16.03.2006",
+                        currentlyAssociated: "YES",
+                        association: "permanent"
+                    },
+                    {
+                        id: 3,
+                        name: "Prof.(Dr.)V.R. Renjith",
+                        qualification: "B.Tech, M.Tech, Ph.D.,DISE",
+                        specialization: "Dynamic Risk Assessment, Layer of Protection anlaysis, Bayesian LOPA, FuzzyLOPA, Risk Matix, Disaster Managment, Safety in Petroleum industries, Safety in drillling",
+                        designation: "Professor",
+                        joiningDate: "2/2/98",
+                        professorDesignationDate: "17.01.2017",
+                        currentlyAssociated: "YES",
+                        association: "permanent"
+                    },
+                    {
+                        id: 4,
+                        name: "Dr.Dipak Kumar Sahoo",
+                        qualification: "PhD, LLB",
+                        specialization: "Structural concrete; Recycled aggregate concrete, Safety management, Legal aspects of HSE",
+                        designation: "Professor",
+                        joiningDate: "28/3/01",
+                        professorDesignationDate: "16.11.2009",
+                        currentlyAssociated: "YES",
+                        association: "permanent"
+                    },
+                    {
+                        id: 5,
+                        name: "Dr.Shankar M P",
+                        qualification: "Ph.D.",
+                        specialization: "Welding, Metallurgy,NDT",
+                        designation: "Assistant Professor",
+                        joiningDate: "25/8/22",
+                        professorDesignationDate: "",
+                        currentlyAssociated: "YES",
+                        association: "contract"
+                    },
+                    {
+                        id: 6,
+                        name: "Ms.Anju Roy",
+                        qualification: "M.Tech",
+                        specialization: "Power electronics",
+                        designation: "Assistant Professor",
+                        joiningDate: "1/11/21",
+                        professorDesignationDate: "",
+                        currentlyAssociated: "YES",
+                        association: "contract"
+                    },
+                    {
+                        id: 7,
+                        name: "Mr.SHYAM P N",
+                        qualification: "M.E",
+                        specialization: "manufacturing /production",
+                        designation: "Assistant Professor",
+                        joiningDate: "13/1/22",
+                        professorDesignationDate: "",
+                        currentlyAssociated: "YES",
+                        association: "contract"
+                    },
+                    {
+                        id: 8,
+                        name: "Ms.BEENA P NAMBIAR",
+                        qualification: "M.Tech",
+                        specialization: "Environmental Engineering",
+                        designation: "Assistant Professor",
+                        joiningDate: "1/7/22",
+                        professorDesignationDate: "",
+                        currentlyAssociated: "YES",
+                        association: "contract"
+                    },
+                    {
+                        id: 9,
+                        name: "Ms. Sheigha Pappachan",
+                        qualification: "M.Tech",
+                        specialization: "Chemical Engineering, Bioprocess and Biotechnology",
+                        designation: "Assistant Professor",
+                        joiningDate: "21/2/23",
+                        professorDesignationDate: "",
+                        currentlyAssociated: "YES",
+                        association: "contract"
+                    },
+                    {
+                        id: 10,
+                        name: "Dr.Lilabhai T S",
+                        qualification: "Ph.D",
+                        specialization: "Chemical Engineering",
+                        designation: "Assistant Professor",
+                        joiningDate: "24/7/15",
+                        professorDesignationDate: "",
+                        currentlyAssociated: "YES",
+                        association: "contract"
+                    },
+                    {
+                        id: 11,
+                        name: "Mr.Karthik Rajeev",
+                        qualification: "M.Tech",
+                        specialization: "Disaster Management, Risk Assessment",
+                        designation: "Assistant Professor",
+                        joiningDate: "7/11/22",
+                        professorDesignationDate: "",
+                        currentlyAssociated: "YES",
+                        association: "contract"
+                    },
+                    {
+                        id: 12,
+                        name: "Dr.Divya P Soman",
+                        qualification: "Ph.D",
+                        specialization: "HEAT TRANSFER AUGMENTATION, NANOTECHNOLOGY, CFD",
+                        designation: "Assistant Professor",
+                        joiningDate: "",
+                        professorDesignationDate: "",
+                        currentlyAssociated: "NO",
+                        association: "contract"
+                    },
+                    {
+                        id: 13,
+                        name: "Ms.Sreechithra M",
+                        qualification: "MTech",
+                        specialization: "Process Engineering",
+                        designation: "Assistant Professor",
+                        joiningDate: "",
+                        professorDesignationDate: "",
+                        currentlyAssociated: "NO",
+                        association: "contract"
+                    }
+                ],
+                staff: [
+                    {
+                        id: 1,
+                        name: "Mr.Akhil M.S",
+                        designation: "Technical Assistant Gr.II",
+                        email: "akhilmanelil@gmail.com",
+                        contact: "9495157716"
+                    },
+                    {
+                        id: 2,
+                        name: "Mr.Vinod M.R",
+                        designation: "Technician Grade I",
+                        email: "Vinodmr87@gmail.com",
+                        contact: "9048655063"
+                    },
+                    {
+                        id: 3,
+                        name: "Mr.Binoy P.R",
+                        designation: "Lab Attendant",
+                        email: "binoyranganathan@gmail.com",
+                        contact: "9446444908"
+                    },
+                    {
+                        id: 4,
+                        name: "Sherin George",
+                        designation: "Assistant Professor",
+                        email: "",
+                        contact: ""
+                    }
+                ]
+            },
+            "Computer Science": {
+                faculty: [
+                    {
+                        id: 1,
+                        name: "Dr. John Doe",
+                        qualification: "Ph.D",
+                        specialization: "Artificial Intelligence, Machine Learning",
+                        designation: "Professor",
+                        joiningDate: "15/6/05",
+                        professorDesignationDate: "20.07.2012",
+                        currentlyAssociated: "YES",
+                        association: "permanent"
+                    },
+                    {
+                        id: 2,
+                        name: "Dr. Jane Smith",
+                        qualification: "Ph.D",
+                        specialization: "Data Science, Big Data Analytics",
+                        designation: "Associate Professor",
+                        joiningDate: "03/8/10",
+                        professorDesignationDate: "",
+                        currentlyAssociated: "YES",
+                        association: "permanent"
+                    }
+                ],
+                staff: [
+                    {
+                        id: 1,
+                        name: "Mr. Robert Brown",
+                        designation: "Lab Assistant",
+                        email: "robert@cusat.ac.in",
+                        contact: "9876543210"
+                    },
+                    {
+                        id: 2,
+                        name: "Ms. Sarah Johnson",
+                        designation: "Technical Assistant",
+                        email: "sarah@cusat.ac.in",
+                        contact: "9876543211"
+                    }
+                ]
+            },
+            "Electronics": {
+                faculty: [
+                    {
+                        id: 1,
+                        name: "Dr. Michael Lee",
+                        qualification: "Ph.D",
+                        specialization: "VLSI Design, Embedded Systems",
+                        designation: "Professor",
+                        joiningDate: "10/4/02",
+                        professorDesignationDate: "15.05.2010",
+                        currentlyAssociated: "YES",
+                        association: "permanent"
+                    }
+                ],
+                staff: [
+                    {
+                        id: 1,
+                        name: "Mr. David Wilson",
+                        designation: "Lab Technician",
+                        email: "david@cusat.ac.in",
+                        contact: "9876543212"
+                    }
+                ]
+            }
+        };
+
+        const departmentSelector = document.getElementById('department-selector');
+        const departmentDetail = document.getElementById('department-detail');
+        const departmentList = document.getElementById('department-list');
+        const departmentNameEl = document.getElementById('department-name');
+        const backButton = document.getElementById('back-button');
+        const facultyTab = document.getElementById('faculty-tab');
+        const staffTab = document.getElementById('staff-tab');
+        const facultyContent = document.getElementById('faculty-content');
+        const staffContent = document.getElementById('staff-content');
+        const facultySearch = document.getElementById('faculty-search');
+        const staffSearch = document.getElementById('staff-search');
+        const facultyTableBody = document.getElementById('faculty-table-body');
+        const staffTableBody = document.getElementById('staff-table-body');
+
+        let currentDepartment = null;
+        
+        function initDepartmentCards() {
+            departmentList.innerHTML = '';
+            
+            Object.keys(departmentData).forEach(dept => {
+                const card = document.createElement('div');
+                card.className = 'department-card';
+                card.innerHTML = `
+                    <div class="card-content">
+                        <h3>${dept}</h3>
+                        <p>Faculty: ${departmentData[dept].faculty.length}</p>
+                        <p>Staff: ${departmentData[dept].staff.length}</p>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    showDepartmentDetail(dept);
+                });
+                
+                departmentList.appendChild(card);
+            });
+        }
+        
+        function showDepartmentDetail(departmentName) {
+            currentDepartment = departmentName;
+            departmentNameEl.textContent = `${departmentName} Department`;
+            departmentSelector.style.display = 'none';
+            departmentDetail.style.display = 'block';
+            
+            facultyTab.classList.add('active-tab');
+            staffTab.classList.remove('active-tab');
+            facultyContent.style.display = 'block';
+            staffContent.style.display = 'none';
+            
+            loadFacultyData();
+            loadStaffData();
+        }
+        
+        function loadFacultyData() {
+            if (!currentDepartment) return;
+            
+            const faculty = departmentData[currentDepartment].faculty;
+            renderFacultyTable(faculty);
+        }
+        
+        function loadStaffData() {
+            if (!currentDepartment) return;
+            
+            const staff = departmentData[currentDepartment].staff;
+            renderStaffTable(staff);
+        }
+        
+        function renderFacultyTable(faculty) {
+            facultyTableBody.innerHTML = '';
+            
+            if (faculty.length === 0) {
+                facultyTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="no-results">No faculty members found</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            faculty.forEach(member => {
+                const row = document.createElement('tr');
+                row.setAttribute('data-id', member.id);
+                row.innerHTML = `
+                    <td>${member.name}</td>
+                    <td>${member.qualification || ''}</td>
+                    <td>${member.designation || ''}</td>
+                    <td class="specialization-cell">${member.specialization && member.specialization.length > 50 
+                        ? member.specialization.substring(0, 50) + '...' 
+                        : (member.specialization || '')}</td>
+                    <td>${member.joiningDate || ''}</td>
+                    <td>${member.association || ''}</td>
+                `;
+                
+                row.addEventListener('click', () => {
+                    const expandedRow = document.querySelector(`.expanded-row[data-id="${member.id}"]`);
+                    if (expandedRow) {
+                        row.classList.toggle('expanded');
+                        expandedRow.classList.toggle('show');
+                    }
+                });
+                
+                facultyTableBody.appendChild(row);
+                
+                const expandedRow = document.createElement('tr');
+                expandedRow.className = 'expanded-row';
+                expandedRow.setAttribute('data-id', member.id);
+                expandedRow.innerHTML = `
+                    <td colspan="6">
+                        <div class="expanded-content">
+                            <p><strong>Full Specialization:</strong> ${member.specialization || 'N/A'}</p>
+                            <p><strong>Currently Associated:</strong> ${member.currentlyAssociated || 'N/A'}</p>
+                            ${member.professorDesignationDate ? 
+                                `<p><strong>Professor Designation Date:</strong> ${member.professorDesignationDate}</p>` : ''}
+                        </div>
+                    </td>
+                `;
+                
+                facultyTableBody.appendChild(expandedRow);
+            });
+        }
+        
+        function renderStaffTable(staff) {
+            staffTableBody.innerHTML = '';
+            
+            if (staff.length === 0) {
+                staffTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="no-results">No staff members found</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            staff.forEach(member => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${member.name}</td>
+                    <td>${member.designation || ''}</td>
+                    <td>${member.email || ''}</td>
+                    <td>${member.contact || ''}</td>
+                `;
+                
+                staffTableBody.appendChild(row);
+            });
+        }
+        
+        function filterFaculty() {
+            const searchTerm = facultySearch.value.toLowerCase();
+            const faculty = departmentData[currentDepartment].faculty;
+            
+            const filteredFaculty = faculty.filter(member => 
+                member.name.toLowerCase().includes(searchTerm) || 
+                (member.designation && member.designation.toLowerCase().includes(searchTerm)) ||
+                (member.specialization && member.specialization.toLowerCase().includes(searchTerm))
+            );
+            
+            renderFacultyTable(filteredFaculty);
+        }
+        
+        function filterStaff() {
+            const searchTerm = staffSearch.value.toLowerCase();
+            const staff = departmentData[currentDepartment].staff;
+            
+            const filteredStaff = staff.filter(member => 
+                member.name.toLowerCase().includes(searchTerm) || 
+                (member.designation && member.designation.toLowerCase().includes(searchTerm)) ||
+                (member.email && member.email.toLowerCase().includes(searchTerm))
+            );
+            
+            renderStaffTable(filteredStaff);
+        }
+        
+        backButton.addEventListener('click', () => {
+            departmentSelector.style.display = 'block';
+            departmentDetail.style.display = 'none';
+            currentDepartment = null;
+        });
+        
+        facultyTab.addEventListener('click', () => {
+            facultyTab.classList.add('active-tab');
+            staffTab.classList.remove('active-tab');
+            facultyContent.style.display = 'block';
+            staffContent.style.display = 'none';
+        });
+        
+        staffTab.addEventListener('click', () => {
+            staffTab.classList.add('active-tab');
+            facultyTab.classList.remove('active-tab');
+            staffContent.style.display = 'block';
+            facultyContent.style.display = 'none';
+        });
+        
+        facultySearch.addEventListener('input', filterFaculty);
+        staffSearch.addEventListener('input', filterStaff);
+        
+        initDepartmentCards();
+    </script>
+</body>
+</html>
